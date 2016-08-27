@@ -9,19 +9,19 @@ const busboy = require('connect-busboy')
 //used for file path
 let path = require('path')
 // Medicalrecords database
-const db = require('mongoskin').db('mongodb://localhost:27017/medicalrecords');
+// const db = require('mongoskin').db('mongodb://localhost:27017/medicalrecords');
 const bodyParser = require('body-parser')
 
 
-let http_api = express();
-http_api.use(busboy());
-http_api.use( bodyParser.json() );       // to support JSON-encoded bodies
-http_api.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+let app = express();
+app.use(busboy());
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
 // Activate CORS
-http_api.use(function(req, res, next) {
+app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
   next()
@@ -31,6 +31,14 @@ http_api.use(function(req, res, next) {
 /**
 * This should not take any data.
 */
-http_api.listen(3000, function () {
+app.listen(3000, function () {
   console.log('THUS SPOKE ZARATHUSTRA')
-})
+});
+
+app.get('/webhook', function (req, res) {
+  if (req.query['hub.verify_token'] === 'YOUR_VERIFY_TOKEN') {
+    res.send(req.query['hub.challenge']);
+  } else {
+    res.send('Error, wrong validation token');    
+  }
+});
