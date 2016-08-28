@@ -79,7 +79,9 @@ function start(unique_id){
       var json = JSON.parse(body);
       var should_join_existing_conversation = (_.filter(json, { waiting: false }).length % 5) >= 3;
       var conversations = _.union(json.map(function(value) { return parseInt(value.conversation); }));
-      if(should_join_existing_conversation){
+      if(_.find(json, { unique_id: unique_id }).length > 0){
+        msg("Already in a conversation")
+      } else if(should_join_existing_conversation){
         console.log("should_join_existing_conversation");
         var conversation_to_join = 0;
         var current_state = '';
