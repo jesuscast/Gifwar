@@ -541,6 +541,7 @@ function parse_msg(req, res){
               console.log(conversations_active);
               // console.log(conversations_active[conversationIndex].captions[user.unique_id])
               sendTextMessage(sender, 'Caption received')
+
               let users_in_conversation = _.filter(json, { conversation: user.conversation })
               let a = Object.keys(conversations_active[conversationIndex].captions).length
               let b = users_in_conversation.length
@@ -587,6 +588,7 @@ function parse_msg(req, res){
         } else {
           conversations_active[conversationIndex].votes[user.unique_id] = 0;
         }
+        var users_in_conversation = _.filter(json, { conversation: user.conversation });
         let kepts = Object.keys(conversations_active[conversationIndex].votes)
         let a = kepts.length
         let b = users_in_conversation.length
