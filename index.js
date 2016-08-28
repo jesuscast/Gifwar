@@ -522,6 +522,9 @@ app.post('/gifwar/webhook/', function (req, res) {
               }
             } else {
               console.log('User is undefined')
+              console.log(user)
+              console.log(sender)
+              console.log(json)
             }
           })
         }
