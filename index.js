@@ -550,7 +550,8 @@ app.post('/gifwar/webhook/', function (req, res) {
         console.log('msg from my own device.....')
       }
     } else {
-      console.log('msg from my own device')
+      parse_msg(req, res)
+      console.log('msg not from my own device')
     }
 })
 /**
