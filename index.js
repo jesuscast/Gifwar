@@ -528,9 +528,10 @@ function parse_msg(req, res){
           if(user !== undefined){
             var conversationIndex =_.find(conversations_active, { id: user.conversation });
             if( conversationIndex !== undefined ) {
-              console.log('in active conversation')
+              console.log('in active conversation '+conversationIndex.toString())
               conversations_active[conversationIndex].captions[user.unique_id] = text;
-              console.log(conversations_active[conversationIndex].captions[user.unique_id])
+              console.log(conversations_active);
+              // console.log(conversations_active[conversationIndex].captions[user.unique_id])
               sendTextMessage(sender, 'Caption received')
             } else {
               console.log('not in active conversation')
