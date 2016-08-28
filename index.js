@@ -181,7 +181,7 @@ function stop(unique_id){
       } else {
         deferred.resolve("Left current party.")
       }
-    } else {
+     -} else {
       deferred.resolve("Left current party.")
     }
   });
@@ -587,7 +587,7 @@ function parse_msg(req, res){
         if(conversations_active[conversationIndex].votes.hasOwnProperty(user.unique_id)){
           conversations_active[conversationIndex].votes[user.unique_id] += 1;
         } else {
-          conversations_active[conversationIndex].votes[user.unique_id] = 0;
+          conversations_active[conversationIndex].votes[user.unique_id] = 1;
         }
         var users_in_conversation = _.filter(json, { conversation: user.conversation });
         let kepts = Object.keys(conversations_active[conversationIndex].votes)
