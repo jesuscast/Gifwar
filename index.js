@@ -440,7 +440,7 @@ app.post('/gifwar/webhook/', function (req, res) {
                   try {
                     sendImage(users_in_conversation.unique_id, url)
                     sendTextMessage(users_in_conversation.unique_id, 'You are playing! Write a caption!')
-                  } catch {
+                  } catch(err) {
                     console.log("User not found: "+users_in_conversation.unique_id)
                   }
                 }
