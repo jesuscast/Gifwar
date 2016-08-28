@@ -70,8 +70,8 @@ function patch_firebase(json){
   });
 }
 
-function start(req, res){
-  let name = req.query['name'];
+function start(unique_id){
+  let name = 'random'
   let deferred = q.defer();
   let msg = '';
   request(base_url+'slash/.json', function (error, response, body) {
