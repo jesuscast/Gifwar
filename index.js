@@ -463,7 +463,12 @@ function send_voting_options(users_in_conversation, userTmp, conversationIndex) 
     let payload =  obtain_payload_element(text, url, user)
     return payload
   })
-  let payload = _.filter(generic_payload, { title: undefined })
+  let payload =[]
+  for(var i = 0; i < generic_payload.length; i++){
+    if(generic_payload[i].title != undefined){
+      payload.push(generic_payload[i])
+    }
+  }
   console.log('generic_payload yas')
   console.log(payload)
   users_in_conversation = _.filter(users_in_conversation, { unique_id: 'sadas' })
