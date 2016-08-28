@@ -66,7 +66,7 @@ app.get('/gifwar/', function (req, res) {
 
 function patch_firebase(json){
   request.patch({ url: base_url+'/.json', json: { slash: json} }, function (error, response, body) {
-    console.log(body);
+    // console.log(body);
   });
 }
 
@@ -85,7 +85,7 @@ app.get('/start', function(req, res){
           var users_in_conversation = _.filter(json, { conversation: conversations[i], waiting: false });
           if(users_in_conversation.length < 5){
             conversation_to_join = conversations[i];
-            current_state = users_in_conversation.status;
+            current_state = users_in_conversation.current_state;
             break;
           }
         }
@@ -125,6 +125,153 @@ app.get('/start', function(req, res){
       //ar 
     }
   })
+});
+
+app.get("/leave", function(req, res){
+  var unique_id = req.query['unique_id'];
+  request(base_url+'slash/.json', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var json = JSON.parse(body);
+      var user = _.find(json, { unique_id: unique_id });
+      console.log(user);
+      if(user.waiting == false){
+        console.log("user not waiting")
+        var people_in_conversation = [];
+        for(let i = 0; i < json.length; i++){
+          if(json[i].conversation == user.conversation)
+            people_in_conversation.push(i);
+        }
+        console.log("people_in_conversation")
+        console.log(people_in_conversation);
+        if(people_in_conversation.length <= 3 ){
+          console.log("people_in_conversation less or equal than 3")
+          for(var i = 0; i < people_in_conversation.length; i++){
+            json[people_in_conversation[i]].waiting = true;
+            json[people_in_conversation[i]].conversation = 0;
+            json[people_in_conversation[i]].current_state = "sending_photo";
+          }
+        } else {
+          console.log("people_in_conversation greater than 3")
+        }
+      } else {
+        console.log("user not waiting")
+      }
+      json = _.pull(json, user);
+      patch_firebase(json);
+      res.send(json);
+    }
+  });
+});
+
+app.get("/send_photo", function(req, res){
+  var unique_id = req.query['unique_id'];
+  request(base_url+'slash/.json', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var json = JSON.parse(body);
+      var user_index = _.findIndex(json, { unique_id: unique_id });
+      var user = json[user_index];
+      if(user.waiting == false){
+        var people_in_conversation = [];
+        for(let i = 0; i < json.length; i++){
+          if(json[i].conversation == user.conversation)
+            people_in_conversation.push(i);
+        }
+        json[user_index].current_state = "sent_photo";
+        var done_sending_photos = true;
+        for(var i = 0; i < people_in_conversation.length; i++){
+          if(json[people_in_conversation[i]].current_state != "sent_photo"){
+            done_sending_photos = false;
+            break;
+          }
+        }
+        if(done_sending_photos){
+          console.log("done_sending_photos")
+          for(var i = 0; i < people_in_conversation.length; i++){
+            json[people_in_conversation[i]].current_state = "writing_captions"
+          }
+        }
+        patch_firebase(json);
+        res.send(json);
+      }
+    } else {
+      console.log("user is waiting")
+      res.send(json);
+    }
+  });
+});
+
+app.get("/write_caption", function(req, res){
+  var unique_id = req.query['unique_id'];
+  request(base_url+'slash/.json', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var json = JSON.parse(body);
+      var user_index = _.findIndex(json, { unique_id: unique_id });
+      var user = json[user_index];
+      if(user.waiting == false){
+        var people_in_conversation = [];
+        for(let i = 0; i < json.length; i++){
+          if(json[i].conversation == user.conversation)
+            people_in_conversation.push(i);
+        }
+        json[user_index].current_state = "wrote_caption";
+        var done_sending_photos = true;
+        for(var i = 0; i < people_in_conversation.length; i++){
+          if(json[people_in_conversation[i]].current_state != "wrote_caption"){
+            done_sending_photos = false;
+            break;
+          }
+        }
+        if(done_sending_photos){
+          console.log("done_sending_photos")
+          for(var i = 0; i < people_in_conversation.length; i++){
+            json[people_in_conversation[i]].current_state = "voting"
+          }
+        }
+        patch_firebase(json);
+        res.send(json);
+      }
+    } else {
+      console.log("user is waiting")
+      res.send(json);
+    }
+  });
+});
+
+app.get("/vote", function(req, res){
+  var unique_id = req.query['unique_id'];
+  request(base_url+'slash/.json', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var json = JSON.parse(body);
+      var user_index = _.findIndex(json, { unique_id: unique_id });
+      var user = json[user_index];
+      if(user.waiting == false){
+        var people_in_conversation = [];
+        for(let i = 0; i < json.length; i++){
+          if(json[i].conversation == user.conversation)
+            people_in_conversation.push(i);
+        }
+        json[user_index].current_state = "voted";
+        var done_sending_photos = true;
+        for(var i = 0; i < people_in_conversation.length; i++){
+          if(json[people_in_conversation[i]].current_state != "voted"){
+            done_sending_photos = false;
+            break;
+          }
+        }
+        if(done_sending_photos){
+          console.log("done_sending_photos")
+          for(var i = 0; i < people_in_conversation.length; i++){
+            json[people_in_conversation[i]].current_state = "sending_photo"
+          }
+        }
+        patch_firebase(json);
+        res.send(json);
+      }
+    } else {
+      console.log("user is waiting")
+      res.send(json);
+    }
+  });
 });
 
 
