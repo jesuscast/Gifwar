@@ -539,10 +539,12 @@ function parse_msg(req, res){
   res.sendStatus(200)
 }
 app.post('/gifwar/webhook/', function (req, res) {
+  console.log('dsada')
     console.log(req.body.entry[0].messaging)
     let tmp  = req.body.entry[0].messaging[0];
     if(tmp.hasOwnProperty('message') == true){
       if(tmp.message.hasOwnProperty('is_echo') == false){
+        console.log('I'm good i guess)
         parse_msg(req, res)
       } else {
         console.log('msg from my own device.....')
