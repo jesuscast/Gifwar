@@ -21,6 +21,7 @@
     "connect-busboy": "0.0.2",
     "express": "^4.14.0",
     "lodash": "^4.15.0",
+    "messenger-bot": "^2.3.0",
     "mongoose": "^4.5.10",
     "q": "^1.4.1",
     "request": "^2.74.0"
