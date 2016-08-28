@@ -181,7 +181,7 @@ function stop(unique_id){
       } else {
         deferred.resolve("Left current party.")
       }
-     -} else {
+    } else {
       deferred.resolve("Left current party.")
     }
   });
