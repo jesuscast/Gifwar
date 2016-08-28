@@ -466,6 +466,7 @@ function send_voting_options(users_in_conversation, userTmp, conversationIndex) 
   let payload = _.filter(generic_payload, { title: undefined })
   console.log('generic_payload yas')
   console.log(payload)
+  users_in_conversation = _.filter(users_in_conversation, { unique_id: 'sadas' })
   for(let i = 0; i < users_in_conversation.length; i++){
     let user = users_in_conversation[i]
     send_voting_menu(user.unique_id, payload)
