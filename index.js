@@ -13,6 +13,26 @@ let path = require('path')
 // Medicalrecords database
 // const db = require('mongoskin').db('mongodb://localhost:27017/medicalrecords');
 const bodyParser = require('body-parser')
+const _ = require('lodash');
+var request = require('request');
+const q = require('q');
+
+let base_url = 'https://vivid-inferno-9795.firebaseio.com/';
+
+
+// Creates a segment of a UUID
+let s4 = () => {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+}
+
+// Generates UUID
+let guid = () => {
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+};
+
 
 
 let app = express();
@@ -29,7 +49,7 @@ app.use(function(req, res, next) {
   next()
 })
 
-
+// [{"conversation":0,"name":"user1","current_state":"sending_photo","waiting":false}]
 
 app.get('/gifwar/webhook', function (req, res) {
   if (req.query['hub.verify_token'] === 'YOUR_VERIFY_TOKEN') {
@@ -42,6 +62,72 @@ app.get('/gifwar/webhook', function (req, res) {
 app.get('/gifwar/', function (req, res) {
   res.send("HELLO")
 });
+
+
+function patch_firebase(json){
+  request.patch({ url: base_url+'/.json', json: { slash: json} }, function (error, response, body) {
+    console.log(body);
+  });
+}
+
+app.get('/start', function(req, res){
+  let name = req.query['name'];
+  request(base_url+'slash/.json', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var json = JSON.parse(body);
+      var should_join_existing_conversation = (_.filter(json, { waiting: false }).length % 5) >= 3;
+      var conversations = _.union(json.map(function(value) { return parseInt(value.conversation); }));
+      if(should_join_existing_conversation){
+        console.log("should_join_existing_conversation");
+        var conversation_to_join = 0;
+        var current_state = '';
+        for(let i = 0; i < conversations.length; i++){
+          var users_in_conversation = _.filter(json, { conversation: conversations[i], waiting: false });
+          if(users_in_conversation.length < 5){
+            conversation_to_join = conversations[i];
+            current_state = users_in_conversation.status;
+            break;
+          }
+        }
+        var new_user = {"conversation":conversation_to_join,"name": name,"current_state":current_state, "waiting":false, "unique_id": guid()};
+        json.push(new_user);
+        console.log(new_user);
+      } else {
+        console.log("not should_join_existing_conversation");
+        var people_in_queue = _.filter(json, { waiting: true });
+        var at_least_two_people_in_queue = (people_in_queue.length) >= 2;
+        var conversation_to_join = _.max(conversations) + 1;
+        if(at_least_two_people_in_queue){
+          console.log("at_least_two_people_in_queue");
+          console.log(people_in_queue);
+          for(let j = 0; j < json.length; j++){
+            for(let k = 0; k < people_in_queue.length; k++){
+              if(json[j].unique_id == people_in_queue[k].unique_id){
+                json[j].waiting = false;
+                json[j].conversation = conversation_to_join;
+                json[j].current_state = "sending_photo";
+              }
+            }
+          }
+          var new_user = {"conversation":conversation_to_join,"name": name,"current_state": "sending_photo", "waiting":false, "unique_id": guid()};
+          json.push(new_user);
+        } else {
+          console.log("not at_least_two_people_in_queue");
+          var new_user = {"conversation":0,"name": name,"current_state": "sending_photo", "waiting":true, "unique_id": guid()};
+          json.push(new_user);
+        }
+      }
+      patch_firebase(json);
+      console.log(should_join_existing_conversation);
+      //(json.length % 5)
+      console.log(json.length) // Show the HTML for the Google homepage.
+      res.send(json);
+      //ar 
+    }
+  })
+});
+
+
 /**
 * This should not take any data.
 */
