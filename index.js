@@ -426,12 +426,16 @@ app.post('/gifwar/webhook/', function (req, res) {
             // sendGenericMessage(sender)
             // sendImage(sender)
             start(sender).then((result) => {
+              cosole.log('Then start')
               obtainRandomGif().then((url)=>{
+                console.log('obtained randomgif')
                 sendImage(sender, url)
               }).catch(()=>{
+                console.log('rejectde gif')
                 sendTextMessage(sender, 'Could not obtain gif')
               })
             }).catch((result) => {
+              console.log('Catch start')
               sendTextMessage(sender, result)
             });
             continue
