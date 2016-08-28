@@ -388,7 +388,7 @@ function obtain_payload_element(text, url, user){
       "buttons": [{
           "type": "postback",
           "title": "Vote for this",
-          "payload": "vote_for_"+user.unique_id,
+          "payload": user.unique_id,
       }],
   }
 }
@@ -421,7 +421,7 @@ function send_voting_menu(sender, elements) {
 
 function start_new_game(msg, json, user, url){
   let users_in_conversation = _.filter(json, { conversation: user.conversation })
-  conversations_active.push({ id: user.conversation, gif: url, captions: {  }  })
+  conversations_active.push({ id: user.conversation, gif: url, captions: {  }, votes: { }  })
   for(let j = 0; j < users_in_conversation.length; j++){
     try {
       console.log(users_in_conversation[j])
@@ -570,9 +570,48 @@ function parse_msg(req, res){
       }
     }
     if (event.postback) {
-      let text = JSON.stringify(event.postback)
-      sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
-      continue
+      obtain_json().then((json) => {
+        let voted_for = event.postback.payload;
+        let user = _.filter(json, { unique_id: sender })
+        let conversationIndex = _.findIndex(conversations_active, { id: user.conversation });
+        if(conversations_active[conversationIndex].votes.hasOwnProperty(user.unique_id)){
+          conversations_active[conversationIndex].votes[user.unique_id] += 1;
+        } else {
+          conversations_active[conversationIndex].votes[user.unique_id] = 0;
+        }
+        let kepts = Object.keys(conversations_active[conversationIndex].votes)
+        let a = kepts.length
+        let b = users_in_conversation.length
+        if( (a == b)  || (a == (b - 1)) ){
+          console.log('everyone is done voting.')
+          // send_voting_options(users_in_conversation, user, conversationIndex)
+          let winner = '';
+          let max = 0;
+          for(let k =0; k < kepts.length; k++){
+            if(conversations_active[conversationIndex].votes[kepts[k]] > max){
+              max = conversations_active[conversationIndex].votes[kepts[k]]
+              winner = kepts[k]
+            } else {
+              console.log('Not big enough')
+            }
+          }
+          if(winner != ''){
+            let caption = conversations_active[conversationIndex].captions[winner]
+            sendTextMessage(sender, caption +' won!')
+          } else {
+            console.log('Error finding winner')
+          }
+        } else {
+          console.log('NOt all people are done voting')
+          console.log(Object.keys(conversations_active[conversationIndex].captions).length);
+          console.log(users_in_conversation.length)
+        }
+        sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+      }).catch((err)=>{
+        console.log('What is wrong postback')
+        console.log(err)
+        sendTextMessage(sender, "Oops something went wrong")
+      })
     }
   }
   res.sendStatus(200)
