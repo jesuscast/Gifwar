@@ -274,41 +274,94 @@ app.get("/vote", function(req, res){
 });
 
 
+function sendTextMessage(sender, text) {
+    let messageData = { text:text }
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token:token},
+        method: 'POST',
+        json: {
+            recipient: {id:sender},
+            message: messageData,
+        }
+    }, function(error, response, body) {
+        if (error) {
+            console.log('Error sending messages: ', error)
+        } else if (response.body.error) {
+            console.log('Error: ', response.body.error)
+        }
+    })
+}
+
+function sendGenericMessage(sender) {
+    let messageData = {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [{
+                    "title": "First card",
+                    "subtitle": "Element #1 of an hscroll",
+                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+                    "buttons": [{
+                        "type": "web_url",
+                        "url": "https://www.messenger.com",
+                        "title": "web url"
+                    }, {
+                        "type": "postback",
+                        "title": "Postback",
+                        "payload": "Payload for first element in a generic bubble",
+                    }],
+                }, {
+                    "title": "Second card",
+                    "subtitle": "Element #2 of an hscroll",
+                    "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
+                    "buttons": [{
+                        "type": "postback",
+                        "title": "Postback",
+                        "payload": "Payload for second element in a generic bubble",
+                    }],
+                }]
+            }
+        }
+    }
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token:token},
+        method: 'POST',
+        json: {
+            recipient: {id:sender},
+            message: messageData,
+        }
+    }, function(error, response, body) {
+        if (error) {
+            console.log('Error sending messages: ', error)
+        } else if (response.body.error) {
+            console.log('Error: ', response.body.error)
+        }
+    })
+}
+
+app.post('/gifwar/webhook/', function (req, res) {
+    let messaging_events = req.body.entry[0].messaging
+    for (let i = 0; i < messaging_events.length; i++) {
+        let event = req.body.entry[0].messaging[i]
+        let sender = event.sender.id
+        if (event.message && event.message.text) {
+            let text = event.message.text
+            if (text === 'Generic') {
+                sendGenericMessage(sender)
+                continue
+            }
+            sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+        }
+    }
+    res.sendStatus(200)
+})
 /**
 * This should not take any data.
 */
-// app.listen(3333, function () {
-//   console.log('THUS SPOKE ZARATHUSTRA')
-// });
+app.listen(3333, function () {
+  console.log('THUS SPOKE ZARATHUSTRA')
+});
 
-const http = require('http')
-const Bot = require('messenger-bot')
-
-let bot = new Bot({
-  token: "652432601574400",
-  verify: '"EAAJRYk107AABALB6dAbSYnM6wUwfSwSuDLmZCb3swunuhO5dqPu7KfRqcBn6Sw5Kt53GIwJglaZA5ue6v5EeTLRU6fhnKUwOIufRaHysGZAE3L6QclFAFXEjo9RT6db4dS4xRCNf58mIxZCt7pZBBMyD8VY5HJG7lLwXMo6i1qQZDZD"',
-  app_secret: '6c2147b26ff0a5f2b5d5bf1e5468495e'
-})
-
-bot.on('error', (err) => {
-  console.log(err.message)
-})
-
-bot.on('message', (payload, reply) => {
-  let text = payload.message.text
-
-  bot.getProfile(payload.sender.id, (err, profile) => {
-    if (err){
-      console.log(err);
-    }
-
-    reply({ text }, (err) => {
-      if (err) throw err
-
-      console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
-    })
-  })
-})
-
-http.createServer(bot.middleware()).listen(3333)
-console.log('Echo bot server running at port 3000.')
