@@ -17,8 +17,7 @@ var request = require('request');
 const q = require('q');
 
 let base_url = 'https://vivid-inferno-9795.firebaseio.com/';
-
-
+let token ="EAAJRYk107AABALB6dAbSYnM6wUwfSwSuDLmZCb3swunuhO5dqPu7KfRqcBn6Sw5Kt53GIwJglaZA5ue6v5EeTLRU6fhnKUwOIufRaHysGZAE3L6QclFAFXEjo9RT6db4dS4xRCNf58mIxZCt7pZBBMyD8VY5HJG7lLwXMo6i1qQZDZD"
 // Creates a segment of a UUID
 let s4 = () => {
     return Math.floor((1 + Math.random()) * 0x10000)
