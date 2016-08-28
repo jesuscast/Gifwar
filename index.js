@@ -632,8 +632,8 @@ function parse_msg(req, res){
           console.log(conversations_active)
           console.log(Object.keys(conversations_active[conversationIndex].captions).length);
           console.log(users_in_conversation.length)
+          sendTextMessage(sender, "Waiting for other people to finish voting")
         }
-        sendTextMessage(sender, "Waiting for other people to finish voting")
       }).catch((err)=>{
         console.log('What is wrong postback')
         console.log(err)
