@@ -433,6 +433,7 @@ app.post('/gifwar/webhook/', function (req, res) {
             // sendImage(sender)
             start(sender).then((result, json, user) => {
               console.log('Then start')
+              console.log(user)
               obtainRandomGif().then((url)=>{
                 console.log('obtained randomgif')
                 let users_in_conversation = _.filter(json, { conversation: user.conversation })
