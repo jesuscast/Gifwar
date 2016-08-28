@@ -136,7 +136,7 @@ function start(unique_id){
       } else {
         console.log('B')
         console.log(new_user);
-        deferred.resolve({ msg, json, new_user});
+        deferred.resolve({ msg: msg, json: json, new_user: new_user});
       }
       //ar 
     }
