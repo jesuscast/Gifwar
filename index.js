@@ -540,8 +540,13 @@ function parse_msg(req, res){
 }
 app.post('/gifwar/webhook/', function (req, res) {
     console.log(req.body.entry[0].messaging)
-    if(req.body.entry[0].messaging[0].message.hasOwnProperty('is_echo') == false){
-      parse_msg(req, res)
+    let tmp  = req.body.entry[0].messaging[0];
+    if(tmp.hasOwnProperty('message') == true){
+      if(tmp.message.hasOwnProperty('is_echo') == false){
+        parse_msg(req, res)
+      } else {
+        console.log('msg from my own device.....')
+      }
     } else {
       console.log('msg from my own device')
     }
