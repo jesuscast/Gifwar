@@ -79,6 +79,7 @@ function start(unique_id){
       var json = JSON.parse(body);
       var should_join_existing_conversation = (_.filter(json, { waiting: false }).length % 5) >= 3;
       var conversations = _.union(json.map(function(value) { return parseInt(value.conversation); }));
+      var new_user = {}
       if(_.find(json, { unique_id: unique_id }) !== undefined){
         msg = "Already in a conversation or waiting";
       } else if(should_join_existing_conversation){
@@ -93,7 +94,7 @@ function start(unique_id){
             break;
           }
         }
-        var new_user = {"conversation":conversation_to_join,"name": name,"current_state":current_state, "waiting":false, "unique_id": unique_id};
+        new_user = {"conversation":conversation_to_join,"name": name,"current_state":current_state, "waiting":false, "unique_id": unique_id};
         json.push(new_user);
         msg = 'You just joined an existing game!'
       } else {
@@ -113,12 +114,12 @@ function start(unique_id){
               }
             }
           }
-          var new_user = {"conversation":conversation_to_join,"name": name,"current_state": "sending_photo", "waiting":false, "unique_id": unique_id};
+          new_user = {"conversation":conversation_to_join,"name": name,"current_state": "sending_photo", "waiting":false, "unique_id": unique_id};
           json.push(new_user);
           msg = 'Starting a new game';
         } else {
           console.log("not at_least_two_people_in_queue");
-          var new_user = {"conversation":0,"name": name,"current_state": "sending_photo", "waiting":true, "unique_id": unique_id};
+          new_user = {"conversation":0,"name": name,"current_state": "sending_photo", "waiting":true, "unique_id": unique_id};
           json.push(new_user);
           msg = 'Not enough people to start a game';
         }
@@ -127,7 +128,7 @@ function start(unique_id){
       console.log(should_join_existing_conversation);
       //(json.length % 5)
       console.log(json.length) // Show the HTML for the Google homepage.
-      if(msg !== 'You just joined an existing game!'){
+      if(new_user.waiting == true){
         deferred.reject(msg)
       } else {
         deferred.resolve(msg);
