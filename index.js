@@ -381,6 +381,17 @@ function sendImage(sender, url) {
     })
 }
 
+function obtain_payload_element(text, url, user){
+  return {
+      "title":text,
+      "image_url": url,
+      "buttons": [{
+          "type": "postback",
+          "title": "Vote for this",
+          "payload": "vote_for_"+user.unique_id,
+      }],
+  }
+}
 function sendGenericMessage(sender) {
     let messageData = {
         "attachment": {
@@ -469,6 +480,16 @@ function from_own_device(tmp){
     return false
   }
 }
+
+function send_voting_options(users_in_conversation, userTmp, conversationIndex) {
+  var generic_payload = users_in_conversation.map(function(user){
+    let text = conversations_active[conversationIndex].captions[user.unique_id]
+    let url = conversations_active[conversationIndex].gif
+    return obtain_payload_element(text, url, user)
+  })
+  console.log('generic_payload')
+  console.log(generic_payload)
+}
 function parse_msg(req, res){
   let messaging_events = req.body.entry[0].messaging
   for (let i = 0; i < messaging_events.length; i++) {
@@ -538,6 +559,7 @@ function parse_msg(req, res){
               let b = users_in_conversation.length
               if( (a == b)  || (a == (b - 1)) ){
                 console.log('All people sent their captions')
+                send_voting_options(users_in_conversation, user, conversationIndex)
               } else {
                 console.log('NOt all people sent their captions yet')
                 console.log(Object.keys(conversations_active[conversationIndex].captions).length);
