@@ -3,7 +3,6 @@
 /**
 * Import Packages
 */
-const http = require('http')
 // To create a nice http api
 const express = require('express')
 // for file handling
