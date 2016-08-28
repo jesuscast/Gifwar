@@ -136,7 +136,7 @@ function start(unique_id){
       } else {
         console.log('B')
         console.log(new_user);
-        deferred.resolve(msg, json, new_user);
+        deferred.resolve({ msg, json, new_user});
       }
       //ar 
     }
@@ -431,7 +431,8 @@ app.post('/gifwar/webhook/', function (req, res) {
         if (text === 'YASS') {
             // sendGenericMessage(sender)
             // sendImage(sender)
-            start(sender).then((result, json, user) => {
+            start(sender).then((data) => {
+              var {result, json, user} = data;
               console.log('Then start')
               console.log(user)
               obtainRandomGif().then((url)=>{
