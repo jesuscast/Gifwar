@@ -165,6 +165,8 @@ function stop(unique_id){
         json = _.pull(json, user);
         patch_firebase(json);
         deferred.resolve("Left current party");
+      } else {
+        deferred.resolve("Left current party.")
       }
     } else {
       deferred.resolve("Left current party.")
