@@ -70,8 +70,10 @@ function patch_firebase(json){
   });
 }
 
-app.get('/start', function(req, res){
+function start(req, res){
   let name = req.query['name'];
+  let deferred = q.defer();
+  let msg = '';
   request(base_url+'slash/.json', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var json = JSON.parse(body);
@@ -91,6 +93,7 @@ app.get('/start', function(req, res){
         }
         var new_user = {"conversation":conversation_to_join,"name": name,"current_state":current_state, "waiting":false, "unique_id": guid()};
         json.push(new_user);
+        msg = 'You just joined an existing game!'
       } else {
         console.log("not should_join_existing_conversation");
         var people_in_queue = _.filter(json, { waiting: true });
@@ -110,21 +113,24 @@ app.get('/start', function(req, res){
           }
           var new_user = {"conversation":conversation_to_join,"name": name,"current_state": "sending_photo", "waiting":false, "unique_id": guid()};
           json.push(new_user);
+          msg = 'Starting a new game';
         } else {
           console.log("not at_least_two_people_in_queue");
           var new_user = {"conversation":0,"name": name,"current_state": "sending_photo", "waiting":true, "unique_id": guid()};
           json.push(new_user);
+          msg = 'Not enough people to start a game';
         }
       }
       patch_firebase(json);
       console.log(should_join_existing_conversation);
       //(json.length % 5)
       console.log(json.length) // Show the HTML for the Google homepage.
-      res.send(json);
+      deferred.resolve(msg);
       //ar 
     }
-  })
-});
+  });
+  return deferred.promise;
+}
 
 app.get("/leave", function(req, res){
   var unique_id = req.query['unique_id'];
@@ -380,8 +386,11 @@ app.post('/gifwar/webhook/', function (req, res) {
       if (event.message && event.message.text) {
         let text = event.message.text
         if (text === 'YASS') {
-            sendGenericMessage(sender)
+            // sendGenericMessage(sender)
             // sendImage(sender)
+            start(sender).then((result) => {
+
+            });
             continue
         }
         sendTextMessage(sender, "Text received, echo: " +sender)
