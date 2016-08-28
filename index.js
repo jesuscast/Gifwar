@@ -278,6 +278,36 @@ app.get("/vote", function(req, res){
 /**
 * This should not take any data.
 */
-app.listen(3333, function () {
-  console.log('THUS SPOKE ZARATHUSTRA')
-});
+// app.listen(3333, function () {
+//   console.log('THUS SPOKE ZARATHUSTRA')
+// });
+
+const http = require('http')
+const Bot = require('messenger-bot')
+
+let bot = new Bot({
+  token: "652432601574400",
+  verify: '"EAAJRYk107AABALB6dAbSYnM6wUwfSwSuDLmZCb3swunuhO5dqPu7KfRqcBn6Sw5Kt53GIwJglaZA5ue6v5EeTLRU6fhnKUwOIufRaHysGZAE3L6QclFAFXEjo9RT6db4dS4xRCNf58mIxZCt7pZBBMyD8VY5HJG7lLwXMo6i1qQZDZD"',
+  app_secret: '6c2147b26ff0a5f2b5d5bf1e5468495e'
+})
+
+bot.on('error', (err) => {
+  console.log(err.message)
+})
+
+bot.on('message', (payload, reply) => {
+  let text = payload.message.text
+
+  bot.getProfile(payload.sender.id, (err, profile) => {
+    if (err) throw err
+
+    reply({ text }, (err) => {
+      if (err) throw err
+
+      console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
+    })
+  })
+})
+
+http.createServer(bot.middleware()).listen(3333)
+console.log('Echo bot server running at port 3000.')
