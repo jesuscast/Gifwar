@@ -19,8 +19,8 @@ const q = require('q');
 let base_url = 'https://vivid-inferno-9795.firebaseio.com/';
 let token ="EAAJRYk107AABALB6dAbSYnM6wUwfSwSuDLmZCb3swunuhO5dqPu7KfRqcBn6Sw5Kt53GIwJglaZA5ue6v5EeTLRU6fhnKUwOIufRaHysGZAE3L6QclFAFXEjo9RT6db4dS4xRCNf58mIxZCt7pZBBMyD8VY5HJG7lLwXMo6i1qQZDZD"
 
-let users = [];
-
+let users_captions = [];
+let conversations_active = [];
 // Creates a segment of a UUID
 let s4 = () => {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -224,6 +224,18 @@ app.get("/send_photo", function(req, res){
   });
 });
 
+function obtain_json(){
+  var deferred = q.defer();
+  request(base_url+'slash/.json', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var json = JSON.parse(body);
+      deferred.resolve(json);
+    } else {
+      deferred.reject()
+    }
+  }
+  return deferred.promise;
+}
 app.get("/write_caption", function(req, res){
   var unique_id = req.query['unique_id'];
   request(base_url+'slash/.json', function (error, response, body) {
@@ -421,6 +433,29 @@ function sendGenericMessage(sender) {
     })
 }
 
+function start_new_game(msg, json, user, url){
+  conversations_active.push({ id: user.conversation, gif: url, captions: { 'id':'caption' }  })
+  for(let j = 0; j < users_in_conversation.length; j++){
+    try {
+      console.log(users_in_conversation[j])
+      sendImage(users_in_conversation[j].unique_id, url)
+      sendTextMessage(users_in_conversation[j].unique_id, 'You are playing! Write a caption!')
+      // conversations_active[conversations_active.length -1].captions[]
+    } catch(err) {
+      console.log("User not found: "+users_in_conversation[j].unique_id)
+    }
+  }
+}
+
+function send_photo_to_user(user){
+  var conversationIndex = _.findIndex(conversations_active, { id: user.conversation });
+  if(conversationIndex !== undefined){
+    let url = conversations_active[conversationIndex].gif
+    sendImage(user.unique_id, url)
+    sendTextMessage(user.unique_id, 'You are playing! Write a caption!!')
+  }
+}
+
 app.post('/gifwar/webhook/', function (req, res) {
     let messaging_events = req.body.entry[0].messaging
     for (let i = 0; i < messaging_events.length; i++) {
@@ -432,7 +467,7 @@ app.post('/gifwar/webhook/', function (req, res) {
             // sendGenericMessage(sender)
             // sendImage(sender)
             start(sender).then((data) => {
-              var result = data.result;
+              var msg = data.msg;
               var json = data.json;
               var user = data.user;
               console.log('Then start')
@@ -440,14 +475,16 @@ app.post('/gifwar/webhook/', function (req, res) {
               obtainRandomGif().then((url)=>{
                 console.log('obtained randomgif')
                 let users_in_conversation = _.filter(json, { conversation: user.conversation })
-                for(let j = 0; j < users_in_conversation.length; j++){
-                  try {
-                    console.log(users_in_conversation[j])
-                    sendImage(users_in_conversation[j].unique_id, url)
-                    sendTextMessage(users_in_conversation[j].unique_id, 'You are playing! Write a caption!')
-                  } catch(err) {
-                    console.log("User not found: "+users_in_conversation[j].unique_id)
-                  }
+                switch(msg) {
+                  case 'Starting a new game':
+                    start_new_game(msg, json, user, url)
+                    break
+                  case 'You just joined an existing game!':
+                    if user.current_state == 'sending_photo':
+                      send_photo_to_user(user)
+                      break
+                  default:
+                    sendTextMessage(user.unique_id, 'Hey!')
                 }
               }).catch((err)=>{
                 console.log(err)
@@ -466,6 +503,23 @@ app.post('/gifwar/webhook/', function (req, res) {
               sendTextMessage(sender, result)
             });
             continue
+        } else {
+          obtain_json().then((json) => {
+            let user = _.find(json, { unique_id: sender })
+            if(user !== undefined){
+              var conversationIndex =_.find(conversations_active, { id: user.conversation });
+              if( conversationIndex !== undefined ) {
+                console.log('in active conversation')
+                conversations_active[conversationIndex].captions[user.unique_id] = text;
+                console.log(conversations_active[conversationIndex].captions[user.unique_id])
+                sendTextMessage(sender, 'Caption received')
+              } else {
+                console.log('not in active conversation')
+              }
+            } else {
+              console.log('User is undefined')
+            }
+          })
         }
         sendTextMessage(sender, "Text received, echo: " +sender)
       }
