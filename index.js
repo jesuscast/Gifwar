@@ -434,6 +434,7 @@ function sendGenericMessage(sender) {
 }
 
 function start_new_game(msg, json, user, url){
+  let users_in_conversation = _.filter(json, { conversation: user.conversation })
   conversations_active.push({ id: user.conversation, gif: url, captions: { 'id':'caption' }  })
   for(let j = 0; j < users_in_conversation.length; j++){
     try {
@@ -474,7 +475,7 @@ app.post('/gifwar/webhook/', function (req, res) {
               console.log(user)
               obtainRandomGif().then((url)=>{
                 console.log('obtained randomgif')
-                let users_in_conversation = _.filter(json, { conversation: user.conversation })
+                
                 switch(msg) {
                   case 'Starting a new game':
                     start_new_game(msg, json, user, url)
