@@ -139,7 +139,7 @@ function stop(unique_id){
       var json = JSON.parse(body);
       var user = _.find(json, { unique_id: unique_id });
       console.log(user);
-      if(user) {
+      if(user !== undefined) {
         if(user.waiting == false){
           console.log("user not waiting")
           var people_in_conversation = [];
