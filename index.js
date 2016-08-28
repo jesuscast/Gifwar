@@ -463,9 +463,9 @@ function send_voting_options(users_in_conversation, userTmp, conversationIndex) 
     let payload =  obtain_payload_element(text, url, user)
     return payload
   })
-  let payload = _.filter(payload, { title: undefined })
+  let payload = _.filter(generic_payload, { title: undefined })
   console.log('generic_payload yas')
-  console.log(generic_payload)
+  console.log(payload)
   for(let i = 0; i < users_in_conversation.length; i++){
     let user = users_in_conversation[i]
     send_voting_menu(user.unique_id, payload)
