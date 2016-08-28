@@ -233,7 +233,7 @@ function obtain_json(){
     } else {
       deferred.reject()
     }
-  }
+  })
   return deferred.promise;
 }
 app.get("/write_caption", function(req, res){
@@ -480,9 +480,12 @@ app.post('/gifwar/webhook/', function (req, res) {
                     start_new_game(msg, json, user, url)
                     break
                   case 'You just joined an existing game!':
-                    if user.current_state == 'sending_photo':
+                    if(user.current_state == 'sending_photo'){
                       send_photo_to_user(user)
-                      break
+                    } else {
+                      sendTextMessage(user.unique_id, msg+' they are in the middle of voting.')
+                    }
+                    break
                   default:
                     sendTextMessage(user.unique_id, 'Hey!')
                 }
