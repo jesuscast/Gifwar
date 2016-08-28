@@ -30,12 +30,6 @@ app.use(function(req, res, next) {
 })
 
 
-/**
-* This should not take any data.
-*/
-app.listen(3000, function () {
-  console.log('THUS SPOKE ZARATHUSTRA')
-});
 
 app.get('/webhook', function (req, res) {
   if (req.query['hub.verify_token'] === 'YOUR_VERIFY_TOKEN') {
@@ -43,4 +37,12 @@ app.get('/webhook', function (req, res) {
   } else {
     res.send('Error, wrong validation token');    
   }
+});
+
+
+/**
+* This should not take any data.
+*/
+app.listen(3333, function () {
+  console.log('THUS SPOKE ZARATHUSTRA')
 });
