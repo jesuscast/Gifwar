@@ -527,7 +527,7 @@ function parse_msg(req, res){
           let user = _.find(json, { unique_id: sender })
           if(user !== undefined){
             var conversationIndex =_.findIndex(conversations_active, { id: user.conversation });
-            if( conversationIndex !== undefined ) {
+            if( conversationIndex !== -1 ) {
               console.log('in active conversation '+conversationIndex)
               conversations_active[conversationIndex].captions[user.unique_id] = text;
               console.log(conversations_active);
