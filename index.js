@@ -18,6 +18,8 @@ const q = require('q');
 
 let base_url = 'https://vivid-inferno-9795.firebaseio.com/';
 let token ="EAAJRYk107AABALB6dAbSYnM6wUwfSwSuDLmZCb3swunuhO5dqPu7KfRqcBn6Sw5Kt53GIwJglaZA5ue6v5EeTLRU6fhnKUwOIufRaHysGZAE3L6QclFAFXEjo9RT6db4dS4xRCNf58mIxZCt7pZBBMyD8VY5HJG7lLwXMo6i1qQZDZD"
+
+
 // Creates a segment of a UUID
 let s4 = () => {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -89,7 +91,6 @@ app.get('/start', function(req, res){
         }
         var new_user = {"conversation":conversation_to_join,"name": name,"current_state":current_state, "waiting":false, "unique_id": guid()};
         json.push(new_user);
-        console.log(new_user);
       } else {
         console.log("not should_join_existing_conversation");
         var people_in_queue = _.filter(json, { waiting: true });
@@ -372,18 +373,18 @@ function sendGenericMessage(sender) {
 }
 
 app.post('/gifwar/webhook/', function (req, res) {
-     let messaging_events = req.body.entry[0].messaging
+    let messaging_events = req.body.entry[0].messaging
     for (let i = 0; i < messaging_events.length; i++) {
       let event = req.body.entry[0].messaging[i]
       let sender = event.sender.id
       if (event.message && event.message.text) {
         let text = event.message.text
-        if (text === 'Generic') {
+        if (text === 'YASS') {
             sendGenericMessage(sender)
             // sendImage(sender)
             continue
         }
-        sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+        sendTextMessage(sender, "Text received, echo: " +sender)
       }
       if (event.postback) {
         let text = JSON.stringify(event.postback)
