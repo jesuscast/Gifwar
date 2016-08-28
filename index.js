@@ -457,87 +457,94 @@ function send_photo_to_user(user){
   }
 }
 
-app.post('/gifwar/webhook/', function (req, res) {
-    let messaging_events = req.body.entry[0].messaging
-    console.log(req.body.entry[0].messaging)
-    for (let i = 0; i < messaging_events.length; i++) {
-      let event = req.body.entry[0].messaging[i]
-      let sender = event.sender.id
-      if (event.message && event.message.text) {
-        let text = event.message.text
-        if (text === 'YASS') {
-            // sendGenericMessage(sender)
-            // sendImage(sender)
-            start(sender).then((data) => {
-              var msg = data.msg;
-              var json = data.json;
-              var user = data.user;
-              console.log('Then start')
-              console.log(user)
-              obtainRandomGif().then((url)=>{
-                console.log('obtained randomgif')
-                
-                switch(msg) {
-                  case 'Starting a new game':
-                    start_new_game(msg, json, user, url)
-                    break
-                  case 'You just joined an existing game!':
-                    if(user.current_state == 'sending_photo'){
-                      send_photo_to_user(user)
-                    } else {
-                      sendTextMessage(user.unique_id, msg+' they are in the middle of voting.')
-                    }
-                    break
-                  default:
-                    sendTextMessage(user.unique_id, 'Hey!')
-                }
-              }).catch((err)=>{
-                console.log(err)
-                sendTextMessage(sender, 'Could not obtain gif')
-              })
-            }).catch((result) => {
-              console.log('Catch start')
-              sendTextMessage(sender, result)
-            });
-            continue
-        }
-        else if (text === 'BYE') {
-            // sendGenericMessage(sender)
-            // sendImage(sender)
-            stop(sender).then((result) => {
-              sendTextMessage(sender, result)
-            });
-            continue
-        } else {
-          obtain_json().then((json) => {
-            let user = _.find(json, { unique_id: sender })
-            if(user !== undefined){
-              var conversationIndex =_.find(conversations_active, { id: user.conversation });
-              if( conversationIndex !== undefined ) {
-                console.log('in active conversation')
-                conversations_active[conversationIndex].captions[user.unique_id] = text;
-                console.log(conversations_active[conversationIndex].captions[user.unique_id])
-                sendTextMessage(sender, 'Caption received')
-              } else {
-                console.log('not in active conversation')
+function parse_msg(req, res){
+  let messaging_events = req.body.entry[0].messaging
+  for (let i = 0; i < messaging_events.length; i++) {
+    let event = req.body.entry[0].messaging[i]
+    let sender = event.sender.id
+    if (event.message && event.message.text) {
+      let text = event.message.text
+      if (text === 'YASS') {
+          // sendGenericMessage(sender)
+          // sendImage(sender)
+          start(sender).then((data) => {
+            var msg = data.msg;
+            var json = data.json;
+            var user = data.user;
+            console.log('Then start')
+            console.log(user)
+            obtainRandomGif().then((url)=>{
+              console.log('obtained randomgif')
+              
+              switch(msg) {
+                case 'Starting a new game':
+                  start_new_game(msg, json, user, url)
+                  break
+                case 'You just joined an existing game!':
+                  if(user.current_state == 'sending_photo'){
+                    send_photo_to_user(user)
+                  } else {
+                    sendTextMessage(user.unique_id, msg+' they are in the middle of voting.')
+                  }
+                  break
+                default:
+                  sendTextMessage(user.unique_id, 'Hey!')
               }
+            }).catch((err)=>{
+              console.log(err)
+              sendTextMessage(sender, 'Could not obtain gif')
+            })
+          }).catch((result) => {
+            console.log('Catch start')
+            sendTextMessage(sender, result)
+          });
+          continue
+      }
+      else if (text === 'BYE') {
+          // sendGenericMessage(sender)
+          // sendImage(sender)
+          stop(sender).then((result) => {
+            sendTextMessage(sender, result)
+          });
+          continue
+      } else {
+        obtain_json().then((json) => {
+          let user = _.find(json, { unique_id: sender })
+          if(user !== undefined){
+            var conversationIndex =_.find(conversations_active, { id: user.conversation });
+            if( conversationIndex !== undefined ) {
+              console.log('in active conversation')
+              conversations_active[conversationIndex].captions[user.unique_id] = text;
+              console.log(conversations_active[conversationIndex].captions[user.unique_id])
+              sendTextMessage(sender, 'Caption received')
             } else {
-              console.log('User is undefined')
-              console.log(user)
-              console.log(sender)
-              console.log(json)
+              console.log('not in active conversation')
             }
-          })
-        }
-        sendTextMessage(sender, "Text received, echo: " +sender)
+          } else {
+            console.log('User is undefined')
+            console.log(user)
+            console.log(sender)
+            console.log(json)
+          }
+        })
       }
-      if (event.postback) {
-        let text = JSON.stringify(event.postback)
-        sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
-        continue
-      }
+      sendTextMessage(sender, "Text received, echo: " +sender)
     }
-    res.sendStatus(200)
+    if (event.postback) {
+      let text = JSON.stringify(event.postback)
+      sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+      continue
+    }
+  }
+  res.sendStatus(200)
+}
+app.post('/gifwar/webhook/', function (req, res) {
+    console.log(req.body.entry[0].messaging)
+    if(req.body.entry[0].messaging[0].message.hasOwnProperty('is_echo') == false){
+      parse_msg(req, res)
+    } else {
+      console.log('msg from my own device')
+    }
 })
 /**
 * This should not take any data.
