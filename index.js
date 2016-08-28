@@ -584,8 +584,10 @@ function parse_msg(req, res){
         console.log(conversationIndex)
         
         if(conversations_active[conversationIndex].votes.hasOwnProperty(user.unique_id)){
+          console.log('had previous property')
           conversations_active[conversationIndex].votes[user.unique_id] += 1;
         } else {
+          console.log('setting up to zero')
           conversations_active[conversationIndex].votes[user.unique_id] = 1;
         }
         var users_in_conversation = _.filter(json, { conversation: user.conversation });
@@ -595,7 +597,7 @@ function parse_msg(req, res){
         let b = users_in_conversation.length
         if( (a == b)  || (a == (b - 1)) ){
           console.log('conversations_active')
-        console.log(conversations_active)
+          console.log(conversations_active)
           console.log('everyone is done voting.')
           // send_voting_options(users_in_conversation, user, conversationIndex)
           let winner = '';
@@ -624,9 +626,9 @@ function parse_msg(req, res){
             console.log('Error finding winner')
           }
         } else {
-          console.log('conversations_active')
-        console.log(conversations_active)
           console.log('NOt all people are done voting')
+          console.log('conversations_active')
+          console.log(conversations_active)
           console.log(Object.keys(conversations_active[conversationIndex].captions).length);
           console.log(users_in_conversation.length)
         }
