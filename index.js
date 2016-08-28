@@ -534,10 +534,14 @@ function parse_msg(req, res){
               // console.log(conversations_active[conversationIndex].captions[user.unique_id])
               sendTextMessage(sender, 'Caption received')
               let users_in_conversation = _.filter(json, { conversation: user.conversation })
-              if(Object.keys(conversations_active[conversationIndex].captions).length == users_in_conversation.length){
+              let a = Object.keys(conversations_active[conversationIndex].captions).length
+              let b = users_in_conversation.length
+              if( (a == b)  || (a == (b - 1)) ){
                 console.log('All people sent their captions')
               } else {
                 console.log('NOt all people sent their captions yet')
+                console.log(Object.keys(conversations_active[conversationIndex].captions).length);
+                console.log(users_in_conversation.length)
               }
             } else {
               console.log('not in active conversation')
