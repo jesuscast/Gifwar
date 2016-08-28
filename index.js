@@ -91,7 +91,7 @@ function start(unique_id){
             break;
           }
         }
-        var new_user = {"conversation":conversation_to_join,"name": name,"current_state":current_state, "waiting":false, "unique_id": guid()};
+        var new_user = {"conversation":conversation_to_join,"name": name,"current_state":current_state, "waiting":false, "unique_id": unique_id};
         json.push(new_user);
         msg = 'You just joined an existing game!'
       } else {
@@ -111,12 +111,12 @@ function start(unique_id){
               }
             }
           }
-          var new_user = {"conversation":conversation_to_join,"name": name,"current_state": "sending_photo", "waiting":false, "unique_id": guid()};
+          var new_user = {"conversation":conversation_to_join,"name": name,"current_state": "sending_photo", "waiting":false, "unique_id": unique_id};
           json.push(new_user);
           msg = 'Starting a new game';
         } else {
           console.log("not at_least_two_people_in_queue");
-          var new_user = {"conversation":0,"name": name,"current_state": "sending_photo", "waiting":true, "unique_id": guid()};
+          var new_user = {"conversation":0,"name": name,"current_state": "sending_photo", "waiting":true, "unique_id": unique_id};
           json.push(new_user);
           msg = 'Not enough people to start a game';
         }
