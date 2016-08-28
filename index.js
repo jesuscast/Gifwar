@@ -392,38 +392,13 @@ function obtain_payload_element(text, url, user){
       }],
   }
 }
-function sendGenericMessage(sender) {
+function send_voting_menu(sender, elements) {
     let messageData = {
         "attachment": {
             "type": "template",
             "payload": {
                 "template_type": "generic",
-                "elements": [{
-                    "title": "First card",
-                    "subtitle": "Element #1 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.messenger.com",
-                        "title": "web url"
-                    }, {
-                        "type": "postback",
-                        "title": "Postback",
-                        "payload": "Payload for first element in a generic bubble",
-                    }],
-                }, {
-                    "title": "Second card",
-                    "subtitle": "Element #2 of an hscroll",
-                    "image_url": "https://media.giphy.com/media/l3vRkn7F5yV6wFBlu/giphy.gif",//"http://messengerdemo.parseapp.com/img/gearvr.png",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "Postback",
-                        "payload": "Payload for second element in a generic bubble",
-                    }],
-                }, {
-                    "title": "THIRD card",
-                    "image_url": "https://media.giphy.com/media/l3vRkn7F5yV6wFBlu/giphy.gif",
-                }]
+                "elements": elements
             }
         }
     }
@@ -482,12 +457,14 @@ function from_own_device(tmp){
 }
 
 function send_voting_options(users_in_conversation, userTmp, conversationIndex) {
-  var generic_payload = users_in_conversation.map(function(user){
+  var generic_payload = users_in_conversation.map(function(user, index, arrayValues){
     let text = conversations_active[conversationIndex].captions[user.unique_id]
     let url = conversations_active[conversationIndex].gif
-    return obtain_payload_element(text, url, user)
+    let payload =  obtain_payload_element(text, url, user)
+    send_voting_menu(user.unique_id, payload)
+    return payload
   })
-  console.log('generic_payload')
+  console.log('generic_payload yas')
   console.log(generic_payload)
 }
 function parse_msg(req, res){
