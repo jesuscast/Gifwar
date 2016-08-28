@@ -168,11 +168,12 @@ function stop(unique_id){
               json[people_in_conversation[i]].conversation = 0;
               json[people_in_conversation[i]].current_state = "sending_photo";
             }
+            conversations_active = _.filter(conversations_active, function(o){ return ( o.id != user.conversation ) })
           } else {
             console.log("people_in_conversation greater than 3")
           }
         } else {
-          console.log("user not waiting")
+          console.log("user  waiting")
         }
         json = _.pull(json, user);
         patch_firebase(json);
