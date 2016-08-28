@@ -139,31 +139,35 @@ function stop(unique_id){
       var json = JSON.parse(body);
       var user = _.find(json, { unique_id: unique_id });
       console.log(user);
-      if(user.waiting == false){
-        console.log("user not waiting")
-        var people_in_conversation = [];
-        for(let i = 0; i < json.length; i++){
-          if(json[i].conversation == user.conversation)
-            people_in_conversation.push(i);
-        }
-        console.log("people_in_conversation")
-        console.log(people_in_conversation);
-        if(people_in_conversation.length <= 3 ){
-          console.log("people_in_conversation less or equal than 3")
-          for(var i = 0; i < people_in_conversation.length; i++){
-            json[people_in_conversation[i]].waiting = true;
-            json[people_in_conversation[i]].conversation = 0;
-            json[people_in_conversation[i]].current_state = "sending_photo";
+      if(user) {
+        if(user.waiting == false){
+          console.log("user not waiting")
+          var people_in_conversation = [];
+          for(let i = 0; i < json.length; i++){
+            if(json[i].conversation == user.conversation)
+              people_in_conversation.push(i);
+          }
+          console.log("people_in_conversation")
+          console.log(people_in_conversation);
+          if(people_in_conversation.length <= 3 ){
+            console.log("people_in_conversation less or equal than 3")
+            for(var i = 0; i < people_in_conversation.length; i++){
+              json[people_in_conversation[i]].waiting = true;
+              json[people_in_conversation[i]].conversation = 0;
+              json[people_in_conversation[i]].current_state = "sending_photo";
+            }
+          } else {
+            console.log("people_in_conversation greater than 3")
           }
         } else {
-          console.log("people_in_conversation greater than 3")
+          console.log("user not waiting")
         }
-      } else {
-        console.log("user not waiting")
+        json = _.pull(json, user);
+        patch_firebase(json);
+        deferred.resolve("Left current party");
       }
-      json = _.pull(json, user);
-      patch_firebase(json);
-      deferred.resolve("Left current party");
+    } else {
+      deferred.resolve("Left current party.")
     }
   });
   return deferred.promise;
