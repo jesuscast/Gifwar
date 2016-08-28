@@ -445,7 +445,7 @@ app.post('/gifwar/webhook/', function (req, res) {
                   }
                 }
               }).catch((err)=>{
-                console.log('rejected gif')
+                console.log(err)
                 sendTextMessage(sender, 'Could not obtain gif')
               })
             }).catch((result) => {
