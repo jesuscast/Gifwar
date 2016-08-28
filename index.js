@@ -422,7 +422,7 @@ function send_voting_menu(sender, elements) {
 
 function start_new_game(msg, json, user, url){
   let users_in_conversation = _.filter(json, { conversation: user.conversation })
-  conversations_active.push({ id: user.conversation, gif: url, captions: {  }, votes: { }  })
+  conversations_active.push({ id: user.conversation, gif: url, captions: {  }, votes: { }, total_votes: 0  })
   for(let j = 0; j < users_in_conversation.length; j++){
     try {
       console.log(users_in_conversation[j])
@@ -583,19 +583,20 @@ function parse_msg(req, res){
         console.log('conversationIndex')
         console.log(conversationIndex)
         
-        if(conversations_active[conversationIndex].votes.hasOwnProperty(user.unique_id)){
+        if(conversations_active[conversationIndex].votes.hasOwnProperty(voted_for)){
           console.log('had previous property')
           conversations_active[conversationIndex].votes[voted_for] += 1;
         } else {
           console.log('setting up to zero')
           conversations_active[conversationIndex].votes[voted_for] = 1;
         }
+        conversations_active[conversationIndex].total_votes += 1
         var users_in_conversation = _.filter(json, { conversation: user.conversation });
         // users_in_conversation = _.filter(users_in_conversation, function(o) { return (o.unique_id !== 'sadas'); } )
-        let kepts = Object.keys(conversations_active[conversationIndex].votes)
-        let a = kepts.length
-        let b = users_in_conversation.length
-        if( (a == b)  || (a == (b - 1)) ){
+        // let kepts = Object.keys(conversations_active[conversationIndex].votes)
+        // let a = conversations_active[conversationIndex]
+        // let b = users_in_conversation.length
+        if( conversations_active[conversationIndex].total_votes == (users_in_conversation.length - 1) ){
           console.log('conversations_active')
           console.log(conversations_active)
           console.log('everyone is done voting.')
