@@ -127,7 +127,11 @@ function start(unique_id){
       console.log(should_join_existing_conversation);
       //(json.length % 5)
       console.log(json.length) // Show the HTML for the Google homepage.
-      deferred.resolve(msg);
+      if(msg !== 'You just joined an existing game!'){
+        deferred.reject(msg)
+      } else {
+        deferred.resolve(msg);
+      }
       //ar 
     }
   });
@@ -308,13 +312,37 @@ function sendTextMessage(sender, text) {
     })
 }
 
-
-function sendImage(sender) {
+function obtainRandomGif(){
+  var deferred = q.defer();
+  request({
+      url: 'http://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC',
+      method: 'GET',
+  }, function(error, response, body) {
+      if (error) {
+          console.log('Error sending messages: ', error)
+          deferred.reject()
+      } else if (response.body.error) {
+          console.log('Error: ', response.body.error)
+          deferred.reject();
+      } else {
+        let j = JSON.parse(body)
+        // console.log(j);
+        let urls = j.data.map(function(element){
+          return element.images.fixed_height.url;
+        })
+        let url = urls[Math.floor(Math.random()*urls.length)]
+        console.log(url);
+        deferred.resolve(url)
+      }
+  })
+  return deferred.promise;
+}
+function sendImage(sender, url) {
     let messageData = {
         "attachment": {
             "type": "image",
             "payload": {
-                "url": "https://media.giphy.com/media/l3vRkn7F5yV6wFBlu/giphy.gif"
+                "url": url
             }
         }
     }
@@ -398,6 +426,12 @@ app.post('/gifwar/webhook/', function (req, res) {
             // sendGenericMessage(sender)
             // sendImage(sender)
             start(sender).then((result) => {
+              obtainRandomGif().then((url)=>{
+                sendImage(sender, url)
+              }).catch(()=>{
+                sendTextMessage(sender, 'Could not obtain gif')
+              })
+            }).catch((result) => {
               sendTextMessage(sender, result)
             });
             continue
@@ -425,5 +459,6 @@ app.post('/gifwar/webhook/', function (req, res) {
 */
 app.listen(3333, function () {
   console.log('THUS SPOKE ZARATHUSTRA')
+
 });
 
