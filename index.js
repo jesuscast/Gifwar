@@ -292,6 +292,33 @@ function sendTextMessage(sender, text) {
     })
 }
 
+
+function sendImage(sender) {
+    let messageData = {
+        "attachment": {
+            "type": "image",
+            "payload": {
+                "url": "https://media.giphy.com/media/l3vRkn7F5yV6wFBlu/giphy.gif"
+            }
+        }
+    }
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token:token},
+        method: 'POST',
+        json: {
+            recipient: {id:sender},
+            message: messageData,
+        }
+    }, function(error, response, body) {
+        if (error) {
+            console.log('Error sending messages: ', error)
+        } else if (response.body.error) {
+            console.log('Error: ', response.body.error)
+        }
+    })
+}
+
 function sendGenericMessage(sender) {
     let messageData = {
         "attachment": {
@@ -349,7 +376,8 @@ app.post('/gifwar/webhook/', function (req, res) {
       if (event.message && event.message.text) {
         let text = event.message.text
         if (text === 'Generic') {
-            sendGenericMessage(sender)
+            // sendGenericMessage(sender)
+            sendImage(sender)
             continue
         }
         sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
