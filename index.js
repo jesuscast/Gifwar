@@ -572,7 +572,7 @@ function parse_msg(req, res){
     if (event.postback) {
       obtain_json().then((json) => {
         let voted_for = event.postback.payload;
-        let user = _.filter(json, { unique_id: sender })
+        let user = _.find(json, { unique_id: sender })
         let conversationIndex = _.findIndex(conversations_active, { id: user.conversation });
         console.log('votoed for')
         console.log(voted_for)
