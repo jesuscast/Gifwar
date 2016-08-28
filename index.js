@@ -437,11 +437,15 @@ app.post('/gifwar/webhook/', function (req, res) {
                 console.log('obtained randomgif')
                 let users_in_conversation = _.filter(json, { conversation: user.conversation })
                 for(let j = 0; j < users_in_conversation.length; j++){
-                  sendImage(sender, url)
-                  sendTextMessage(sender, 'You are playing! Write a caption!')
+                  try {
+                    sendImage(users_in_conversation.unique_id, url)
+                    sendTextMessage(users_in_conversation.unique_id, 'You are playing! Write a caption!')
+                  } catch {
+                    console.log("User not found: "+users_in_conversation.unique_id)
+                  }
                 }
-              }).catch(()=>{
-                console.log('rejectde gif')
+              }).catch((err)=>{
+                console.log('rejected gif')
                 sendTextMessage(sender, 'Could not obtain gif')
               })
             }).catch((result) => {
