@@ -31,7 +31,7 @@ app.use(function(req, res, next) {
 
 
 
-app.get('/webhook', function (req, res) {
+app.get('/gifwar/webhook', function (req, res) {
   if (req.query['hub.verify_token'] === 'YOUR_VERIFY_TOKEN') {
     res.send(req.query['hub.challenge']);
   } else {
@@ -39,7 +39,9 @@ app.get('/webhook', function (req, res) {
   }
 });
 
-
+app.get('/gifwar/', function (req, res) {
+  res.send("HELLO")
+});
 /**
 * This should not take any data.
 */
