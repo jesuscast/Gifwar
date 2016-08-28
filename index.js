@@ -574,6 +574,12 @@ function parse_msg(req, res){
         let voted_for = event.postback.payload;
         let user = _.filter(json, { unique_id: sender })
         let conversationIndex = _.findIndex(conversations_active, { id: user.conversation });
+        console.log('votoed for')
+        console.log(voted_for)
+        console.log('iser')
+        console.log(user)
+        console.log('conversationIndex')
+        console.log(conversationIndex)
         if(conversations_active[conversationIndex].votes.hasOwnProperty(user.unique_id)){
           conversations_active[conversationIndex].votes[user.unique_id] += 1;
         } else {
