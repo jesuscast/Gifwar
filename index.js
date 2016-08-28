@@ -542,6 +542,9 @@ function parse_msg(req, res){
             console.log(sender)
             console.log(json)
           }
+        }).catch((err)=>{
+          console.log('What is wrong')
+          console.log(err)
         })
       }
       sendTextMessage(sender, "Text received, echo: " +sender)
