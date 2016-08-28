@@ -132,8 +132,8 @@ function start(unique_id){
   return deferred.promise;
 }
 
-app.get("/leave", function(req, res){
-  var unique_id = req.query['unique_id'];
+function stop(unique_id){
+  var deferred = q.defer();
   request(base_url+'slash/.json', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var json = JSON.parse(body);
@@ -163,10 +163,11 @@ app.get("/leave", function(req, res){
       }
       json = _.pull(json, user);
       patch_firebase(json);
-      res.send(json);
+      deferred.resolve("Left current party");
     }
   });
-});
+  return deferred.promise;
+};
 
 app.get("/send_photo", function(req, res){
   var unique_id = req.query['unique_id'];
@@ -389,6 +390,14 @@ app.post('/gifwar/webhook/', function (req, res) {
             // sendGenericMessage(sender)
             // sendImage(sender)
             start(sender).then((result) => {
+              sendTextMessage(sender, result)
+            });
+            continue
+        }
+        else if (text === 'BYE') {
+            // sendGenericMessage(sender)
+            // sendImage(sender)
+            stop(sender).then((result) => {
               sendTextMessage(sender, result)
             });
             continue
