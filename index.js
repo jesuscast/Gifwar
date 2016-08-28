@@ -80,7 +80,7 @@ function start(unique_id){
       var should_join_existing_conversation = (_.filter(json, { waiting: false }).length % 5) >= 3;
       var conversations = _.union(json.map(function(value) { return parseInt(value.conversation); }));
       if(_.find(json, { unique_id: unique_id }) !== undefined){
-        msg("Already in a conversation")
+        msg = "Already in a conversation or waiting";
       } else if(should_join_existing_conversation){
         console.log("should_join_existing_conversation");
         var conversation_to_join = 0;
