@@ -590,7 +590,7 @@ function parse_msg(req, res){
           conversations_active[conversationIndex].votes[user.unique_id] = 1;
         }
         var users_in_conversation = _.filter(json, { conversation: user.conversation });
-        users_in_conversation = _.filter(users_in_conversation, function(o) { return (o.unique_id !== 'sadas'); } )
+        // users_in_conversation = _.filter(users_in_conversation, function(o) { return (o.unique_id !== 'sadas'); } )
         let kepts = Object.keys(conversations_active[conversationIndex].votes)
         let a = kepts.length
         let b = users_in_conversation.length
@@ -608,6 +608,7 @@ function parse_msg(req, res){
             }
           }
           if(winner != ''){
+            users_in_conversation = _.filter(users_in_conversation, function(o) { return (o.unique_id !== 'sadas'); } )
             let caption = conversations_active[conversationIndex].captions[winner]
             let final = users_in_conversation.map(function(userTmp){
               if(caption == conversations_active[conversationIndex].captions[userTmp.unique_id]){
