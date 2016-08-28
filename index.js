@@ -457,11 +457,26 @@ function send_photo_to_user(user){
   }
 }
 
+
+function from_own_device(message){
+  if(message.hasOwnProperty('message') == true){
+    if(tmp.message.hasOwnProperty('is_echo') == false){
+      return false
+    } else {
+      return true
+    }
+  } else {
+    return false
+  }
+}
 function parse_msg(req, res){
   let messaging_events = req.body.entry[0].messaging
   for (let i = 0; i < messaging_events.length; i++) {
     let event = req.body.entry[0].messaging[i]
     let sender = event.sender.id
+    if(from_own_device(event)){
+      continue
+    }
     if (event.message && event.message.text) {
       let text = event.message.text
       if (text === 'YASS') {
@@ -539,20 +554,8 @@ function parse_msg(req, res){
   res.sendStatus(200)
 }
 app.post('/gifwar/webhook/', function (req, res) {
-  console.log('dsada')
-    console.log(req.body.entry[0].messaging)
-    let tmp  = req.body.entry[0].messaging[0];
-    if(tmp.hasOwnProperty('message') == true){
-      if(tmp.message.hasOwnProperty('is_echo') == false){
-        console.log('Im good i guess')
-        parse_msg(req, res)
-      } else {
-        console.log('msg from my own device.....')
-      }
-    } else {
-      parse_msg(req, res)
-      console.log('msg not from my own device')
-    }
+  console.log('inside the webhook')
+  parse_msg(req, res)
 })
 /**
 * This should not take any data.
