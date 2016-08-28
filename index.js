@@ -582,8 +582,7 @@ function parse_msg(req, res){
         console.log(user)
         console.log('conversationIndex')
         console.log(conversationIndex)
-        console.log('conversations_active')
-        console.log(conversations_active)
+        
         if(conversations_active[conversationIndex].votes.hasOwnProperty(user.unique_id)){
           conversations_active[conversationIndex].votes[user.unique_id] += 1;
         } else {
@@ -595,6 +594,8 @@ function parse_msg(req, res){
         let a = kepts.length
         let b = users_in_conversation.length
         if( (a == b)  || (a == (b - 1)) ){
+          console.log('conversations_active')
+        console.log(conversations_active)
           console.log('everyone is done voting.')
           // send_voting_options(users_in_conversation, user, conversationIndex)
           let winner = '';
@@ -623,6 +624,8 @@ function parse_msg(req, res){
             console.log('Error finding winner')
           }
         } else {
+          console.log('conversations_active')
+        console.log(conversations_active)
           console.log('NOt all people are done voting')
           console.log(Object.keys(conversations_active[conversationIndex].captions).length);
           console.log(users_in_conversation.length)
