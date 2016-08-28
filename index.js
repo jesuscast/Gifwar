@@ -389,7 +389,7 @@ app.post('/gifwar/webhook/', function (req, res) {
             // sendGenericMessage(sender)
             // sendImage(sender)
             start(sender).then((result) => {
-
+              sendTextMessage(sender, result)
             });
             continue
         }
