@@ -608,7 +608,15 @@ function parse_msg(req, res){
           }
           if(winner != ''){
             let caption = conversations_active[conversationIndex].captions[winner]
-            sendTextMessage(sender, caption +' won!')
+            let final = users_in_conversation.map(function(userTmp){
+              if(caption == conversations_active[conversationIndex].captions[userTmp.unique_id]){
+                sendTextMessage(userTmp.unique_id,'You won!')
+              } else {
+                sendTextMessage(userTmp.unique_id, caption +' won!')
+              }
+              return 'yas'
+            })
+            console.log(final)
           } else {
             console.log('Error finding winner')
           }
