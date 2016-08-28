@@ -379,8 +379,8 @@ app.post('/gifwar/webhook/', function (req, res) {
       if (event.message && event.message.text) {
         let text = event.message.text
         if (text === 'Generic') {
-            // sendGenericMessage(sender)
-            sendImage(sender)
+            sendGenericMessage(sender)
+            // sendImage(sender)
             continue
         }
         sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
