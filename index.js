@@ -347,6 +347,9 @@ function sendGenericMessage(sender) {
                         "title": "Postback",
                         "payload": "Payload for second element in a generic bubble",
                     }],
+                }, {
+                    "title": "THIRD card",
+                    "image_url": "https://media.giphy.com/media/l3vRkn7F5yV6wFBlu/giphy.gif",
                 }]
             }
         }
