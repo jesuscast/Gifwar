@@ -129,8 +129,10 @@ function start(unique_id){
       //(json.length % 5)
       console.log(json.length) // Show the HTML for the Google homepage.
       if(new_user.waiting == true){
+        console.log(new_user)
         deferred.reject(msg)
       } else {
+        console.log(new_user);
         deferred.resolve(msg);
       }
       //ar 
