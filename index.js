@@ -435,7 +435,7 @@ function sendGenericMessage(sender) {
 
 function start_new_game(msg, json, user, url){
   let users_in_conversation = _.filter(json, { conversation: user.conversation })
-  conversations_active.push({ id: user.conversation, gif: url, captions: { 'id':'caption' }  })
+  conversations_active.push({ id: user.conversation, gif: url, captions: {  }  })
   for(let j = 0; j < users_in_conversation.length; j++){
     try {
       console.log(users_in_conversation[j])
@@ -533,8 +533,15 @@ function parse_msg(req, res){
               console.log(conversations_active);
               // console.log(conversations_active[conversationIndex].captions[user.unique_id])
               sendTextMessage(sender, 'Caption received')
+              let users_in_conversation = _.filter(json, { conversation: user.conversation })
+              if(Object.keys(conversations_active[conversationIndex].captions).length == users_in_conversation.length){
+                console.log('All people sent their captions')
+              } else {
+                console.log('NOt all people sent their captions yet')
+              }
             } else {
               console.log('not in active conversation')
+              sendTextMessage(sender, "Text received, echo: " +sender)
             }
           } else {
             console.log('User is undefined')
@@ -545,9 +552,9 @@ function parse_msg(req, res){
         }).catch((err)=>{
           console.log('What is wrong')
           console.log(err)
+          sendTextMessage(sender, "Oops something went wrong")
         })
       }
-      sendTextMessage(sender, "Text received, echo: " +sender)
     }
     if (event.postback) {
       let text = JSON.stringify(event.postback)
