@@ -585,10 +585,10 @@ function parse_msg(req, res){
         
         if(conversations_active[conversationIndex].votes.hasOwnProperty(user.unique_id)){
           console.log('had previous property')
-          conversations_active[conversationIndex].votes[user.unique_id] += 1;
+          conversations_active[conversationIndex].votes[voted_for] += 1;
         } else {
           console.log('setting up to zero')
-          conversations_active[conversationIndex].votes[user.unique_id] = 1;
+          conversations_active[conversationIndex].votes[voted_for] = 1;
         }
         var users_in_conversation = _.filter(json, { conversation: user.conversation });
         // users_in_conversation = _.filter(users_in_conversation, function(o) { return (o.unique_id !== 'sadas'); } )
