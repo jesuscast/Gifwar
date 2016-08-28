@@ -314,7 +314,7 @@ function sendGenericMessage(sender) {
                 }, {
                     "title": "Second card",
                     "subtitle": "Element #2 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
+                    "image_url": "https://media.giphy.com/media/l3vRkn7F5yV6wFBlu/giphy.gif",//"http://messengerdemo.parseapp.com/img/gearvr.png",
                     "buttons": [{
                         "type": "postback",
                         "title": "Postback",
