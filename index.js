@@ -19,6 +19,7 @@ const q = require('q');
 let base_url = 'https://vivid-inferno-9795.firebaseio.com/';
 let token ="EAAJRYk107AABALB6dAbSYnM6wUwfSwSuDLmZCb3swunuhO5dqPu7KfRqcBn6Sw5Kt53GIwJglaZA5ue6v5EeTLRU6fhnKUwOIufRaHysGZAE3L6QclFAFXEjo9RT6db4dS4xRCNf58mIxZCt7pZBBMyD8VY5HJG7lLwXMo6i1qQZDZD"
 
+let users = [];
 
 // Creates a segment of a UUID
 let s4 = () => {
@@ -135,7 +136,7 @@ function start(unique_id){
       } else {
         console.log('B')
         console.log(new_user);
-        deferred.resolve(msg);
+        deferred.resolve(msg, json, new_user);
       }
       //ar 
     }
@@ -430,12 +431,15 @@ app.post('/gifwar/webhook/', function (req, res) {
         if (text === 'YASS') {
             // sendGenericMessage(sender)
             // sendImage(sender)
-            start(sender).then((result) => {
+            start(sender).then((result, json, user) => {
               console.log('Then start')
               obtainRandomGif().then((url)=>{
                 console.log('obtained randomgif')
-                sendImage(sender, url)
-                sendTextMessage(sender, 'You are playing! Write a caption!')
+                let users_in_conversation = _.filter(json, { conversation: user.conversation })
+                for(let j = 0; j < users_in_conversation.length; j++){
+                  sendImage(sender, url)
+                  sendTextMessage(sender, 'You are playing! Write a caption!')
+                }
               }).catch(()=>{
                 console.log('rejectde gif')
                 sendTextMessage(sender, 'Could not obtain gif')
