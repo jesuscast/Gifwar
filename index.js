@@ -461,11 +461,15 @@ function send_voting_options(users_in_conversation, userTmp, conversationIndex) 
     let text = conversations_active[conversationIndex].captions[user.unique_id]
     let url = conversations_active[conversationIndex].gif
     let payload =  obtain_payload_element(text, url, user)
-    send_voting_menu(user.unique_id, payload)
     return payload
   })
+  let payload = _.filter(payload, { title: undefined })
   console.log('generic_payload yas')
   console.log(generic_payload)
+  for(let i = 0; i < users_in_conversation.length; i++){
+    let user = users_in_conversation[i]
+    send_voting_menu(user.unique_id, payload)
+  }
 }
 function parse_msg(req, res){
   let messaging_events = req.body.entry[0].messaging
