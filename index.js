@@ -431,7 +431,7 @@ app.post('/gifwar/webhook/', function (req, res) {
             // sendGenericMessage(sender)
             // sendImage(sender)
             start(sender).then((result) => {
-              cosole.log('Then start')
+              console.log('Then start')
               obtainRandomGif().then((url)=>{
                 console.log('obtained randomgif')
                 sendImage(sender, url)
