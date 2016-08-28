@@ -442,10 +442,11 @@ app.post('/gifwar/webhook/', function (req, res) {
                 let users_in_conversation = _.filter(json, { conversation: user.conversation })
                 for(let j = 0; j < users_in_conversation.length; j++){
                   try {
-                    sendImage(users_in_conversation.unique_id, url)
-                    sendTextMessage(users_in_conversation.unique_id, 'You are playing! Write a caption!')
+                    console.log(users_in_conversation[j])
+                    sendImage(users_in_conversation[j].unique_id, url)
+                    sendTextMessage(users_in_conversation[j].unique_id, 'You are playing! Write a caption!')
                   } catch(err) {
-                    console.log("User not found: "+users_in_conversation.unique_id)
+                    console.log("User not found: "+users_in_conversation[j].unique_id)
                   }
                 }
               }).catch((err)=>{
