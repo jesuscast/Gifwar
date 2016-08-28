@@ -623,6 +623,13 @@ function parse_msg(req, res){
               return 'yas'
             })
             console.log(final)
+            conversations_active = _.filter(conversations_active, function(o){ return ( o.id != user.conversation ) })
+            obtainRandomGif().then((url)=>{
+              console.log('Starting new game')
+              start_new_game('Starting a new game', json, user, url)
+            }).catch((err)=>{
+              console.log(err)
+            })
           } else {
             console.log('Error finding winner')
           }
