@@ -458,8 +458,8 @@ function send_photo_to_user(user){
 }
 
 
-function from_own_device(message){
-  if(message.hasOwnProperty('message') == true){
+function from_own_device(tmp){
+  if(tmp.hasOwnProperty('message') == true){
     if(tmp.message.hasOwnProperty('is_echo') == false){
       return false
     } else {
